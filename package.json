@@ -1,0 +1,48 @@
+{
+  "name": "botbuilder-sample-state",
+  "version": "1.0.0",
+  "description": "Bot Builder Sample - State",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Microsoft Corp.",
+  "license": "MIT",
+  "keywords": [
+    "botbuilder",
+    "bots",
+    "chatbots",
+    "botbuilder-samples"
+  ],
+  "bugs": {
+    "url": "https://github.com/Microsoft/BotBuilder-Samples/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/BotBuilder-Samples.git"
+  },
+  "dependencies": {
+    "ajax-request": "^1.2.3",
+    "axios": "^0.16.2",
+    "bluebird": "^3.5.1",
+    "body-parser": "^1.18.2",
+    "botbuilder": "^3.8.2",
+    "cli-table": "^0.3.1",
+    "dotenv-extended": "^1.0.4",
+    "express": "^4.16.2",
+    "git": "^0.1.5",
+    "global-tunnel": "^1.2.0",
+    "http-proxy": "^1.16.2",
+    "https-proxy-agent": "^2.1.0",
+    "jquery": "^3.2.1",
+    "needle": "^2.0.1",
+    "node-json2html": "^1.1.1",
+    "node-regexp": "^0.1.1",
+    "phone-regex": "^2.1.0",
+    "querystring": "^0.2.0",
+    "regex": "^0.1.1",
+    "regex-email": "^1.0.2",
+    "request": "^2.81.0",
+    "restify": "^4.3.0",
+    "superagent": "^3.8.1"
+  }
+}
