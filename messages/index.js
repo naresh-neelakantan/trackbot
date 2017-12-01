@@ -3,13 +3,15 @@
 
 var builder = require('botbuilder');
 var restify = require('restify');
-var database = require("./Database.js")
+var path = require('path');
+var database = require(path.join(__dirname, "./Database.js"));
+//var database = require("./Database.js")
 const env = require('dotenv');
 var Table = require('cli-table');
 var phone = require('phone-regex');
 var email = require('regex-email');
 var ProgressBar = require('progress');
-var path = require('path');
+//var path = require('path');
 var botbuilder_azure = require("botbuilder-azure");
 
 env.config();
