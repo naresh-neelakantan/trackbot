@@ -27,6 +27,7 @@
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "botbuilder": "^3.12.0",
+    "botbuilder-azure": "3.0.2",
     "cli-table": "^0.3.1",
     "dotenv-extended": "^1.0.4",
     "express": "^4.16.2",
@@ -45,5 +46,8 @@
     "request": "^2.81.0",
     "restify": "^4.3.0",
     "superagent": "^3.8.1"
+  },
+  "devDependencies": {
+      "restify": "^4.3.0"
   }
 }
