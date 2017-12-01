@@ -10,22 +10,48 @@ var phone = require('phone-regex');
 var email = require('regex-email');
 var ProgressBar = require('progress');
 var path = require('path');
+var botbuilder_azure = require("botbuilder-azure");
 
 env.config();
 
-// Setup Restify Server
-var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function () {
-    console.log('%s listening to %s', server.name, server.url);
+var useEmulator = (process.env.NODE_ENV == 'development');
+
+var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure.BotServiceConnector({
+    appId: process.env['MicrosoftAppId'],
+    appPassword: process.env['MicrosoftAppPassword'],
+    stateEndpoint: process.env['BotStateEndpoint'],
+    openIdMetadata: process.env['BotOpenIdMetadata']
 });
+
+if (useEmulator) {
+    //var restify = require('restify');
+    //var server = restify.createServer();
+    //server.listen(3978, function() {
+    //    console.log('test bot endpont at http://localhost:3978/api/messages');
+    //});
+    var server = restify.createServer();
+    server.listen(process.env.port || process.env.PORT || 3978, function () {
+        console.log('%s listening to %s', server.name, server.url);
+    });
+    
+    server.post('/api/messages', connector.listen());    
+} else {
+    module.exports = { default: connector.listen() }
+}
+
+// Setup Restify Server
+//var server = restify.createServer();
+//server.listen(process.env.port || process.env.PORT || 3978, function () {
+//    console.log('%s listening to %s', server.name, server.url);
+//});
 
 // Create connector and listen for messagesnpm install arraylist
-var connector = new builder.ChatConnector({
-    appId: process.env.MICROSOFT_APP_ID,
-    appPassword: process.env.MICROSOFT_APP_PASSWORD
-});
+//var connector = new builder.ChatConnector({
+  //  appId: process.env.MICROSOFT_APP_ID,
+  //  appPassword: process.env.MICROSOFT_APP_PASSWORD
+//});
 
-server.post('/api/messages', connector.listen());
+//server.post('/api/messages', connector.listen());
 var HelpMessage = '';
 var UserNameKey = 'UserName';
 var UserWelcomedKey = 'UserWelcomed';
@@ -57,6 +83,7 @@ var bot = new builder.UniversalBot(connector, [
         }
     }
 ]);
+bot.localePath(path.join(__dirname, './locale'));
 
 
 
