@@ -8,8 +8,7 @@ const env = require('dotenv');
 var Table = require('cli-table');
 var phone = require('phone-regex');
 var email = require('regex-email');
-var promisep = require('promise-patterns');
-
+var ProgressBar = require('progress');
 env.config();
 
 // Setup Restify Server
@@ -46,13 +45,13 @@ var bot = new builder.UniversalBot(connector, [
             return session.beginDialog('greet');
         }
         else {
-            if(session.message.text.length !=11)
-            {
-              session.beginDialog('GetUserData');
-             }
-             else{
+            //if(session.message.text.length !=11)
+           // {
+              //session.beginDialog('GetUserData');
+             //}
+            // else{
                session.beginDialog('MainMethod');
-              }
+             // }
         }
     }
 ]);
@@ -62,10 +61,9 @@ var bot = new builder.UniversalBot(connector, [
 bot.dialog('GetUserData', [  
     (session, args) => 
     { 
-        var list = [];
+        var list  =[];
         var list2 =[];
-        var list3 =[];  
-                  
+        var list3 =[];   
 
         var input = session.userData[UserNameKey];
         var Mobcheck  =  phone().test(input);
@@ -89,7 +87,7 @@ bot.dialog('GetUserData', [
          //console.log(list2);
          //console.log( list2.find["Yet to deliver"]);
          for(var i =0; i<list2.length;i++)
-         {
+         { 
            if(list2[i] =="Yet to deliver")  
            {
                list3.push(list[i]);
@@ -111,7 +109,7 @@ bot.dialog('GetUserData', [
         
     },function (session, result) {
        
-        var notlist = session.message.text;
+        var notlist = session.  message.text;
         var list1 =[]
         if(notlist =='None of the above' )
         {       
@@ -137,14 +135,25 @@ bot.dialog('GetUserData', [
 // Greet dialogbu
 bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
     var Search  = session.message.text; 
-    var intent  = Search.split('=');
+    if(Search =="Exit")
+    {
+       session.endDialog("Thank you! It was nice speaking to you. Have a nice day");
+       
+    }
+    else if(Search =="Continue"){
+           //builder.Prompts.text(session,"Please enter AWB number");
+           session.beginDialog("EndMethod");
+    }
+    else{
+
+   var intent  = Search.split('=');
    //  var childId = results.childId.split(':');
     if (results && results.response) {
 
           var Search  = session.message.text; 
          var intent  = Search.split('=');
        // var list1 =[]
-          //list1.push('Track By AWB Number');
+          //list1.push('Track By AWB Number');  
          // list1.push('Track By Flight Number');
   
           
@@ -156,7 +165,7 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
             return session.endDialog("Please enter Flight number")} 
              
          session.userData[UserNameKey] = results.response;           
-        if(session.userData[UserNameKey]!=""|| session.userData[UserNameKey]!= undefined)        {
+        if(session.userData[UserNameKey]!=""|| session.userData[UserNameKey]!= undefined){
             
            session.privateConversationData[UserWelcomedKey] = true;
             var thumbnail = new builder.ThumbnailCard(session);
@@ -166,7 +175,7 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
          var name= "";
          var company="";
          database.awb.forEach(function(element) {
-            if(element.EmailId.toString()== session.userData[UserNameKey]){            
+            if(element.EmailId.toString()== session.userData[UserNameKey]||element.Mobile.toString()== session.userData[UserNameKey]){            
                 name=element.Name.toString();
                 company=element.Company.toString();
             }
@@ -182,30 +191,27 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
            //session.endDialog('Welcome to Swiss Cargo AWB/Flight search.Welcome %s! %s', HelpMessage);
      }
      else if(intent[1]=="Track Shipment"){
-        session.beginDialog('GetUserData');
-        
+        session.beginDialog('GetUserData');       
            //builder.Prompts.choice(session, 'Please select any one from list', list1,{ listStyle: builder.ListStyle.button });     
      }
      else{
-        var thumbnail = new builder.ThumbnailCard(session);
+          var thumbnail = new builder.ThumbnailCard(session);
           thumbnail.title("Welcome to Swiss World Cargo");
-          thumbnail.images([builder.CardImage.create(session,"C:/Users/19242/Pictures/image-robot.PNG")]);
-          //thumbnail.images([builder.CardImage.create(session,"C:/Users/Public/Pictures/Sample Pictures/girl-icon.PNG")]);
-          
+          thumbnail.images([builder.CardImage.create(session,"C:/Users/19242/Pictures/image-humanoid.PNG")]);
+          //thumbnail.images([builder.CardImage.create(session,"C:/Users/Public/Pictures/Sample Pictures/girl-icon.PNG")]);          
          // thumbnail.images([builder.CardImage.create(session,"C:/Users/Public/Pictures/Sample Pictures/Swiss.PNG")]);
-          var text = '\n\rI am Alan(Email:alan@swisscargo.com).\n\rPlease provide your email address or phone number?';
+          var text = '\n\rI am Alan, Track&Trace AI Bot from Swiss World Cargo. \r\n Email-id: alan@swisscargo.com.\r\nPlease provide your email address or phone number?';
           thumbnail.text(text);
           thumbnail.tap(new builder.CardAction.openUrl(session,"https://www.swissworldcargo.com/about_us/company/our_story"));
-          //thumbnail.buttons([new builder.CardAction.dialogAction(session," ","",""),new builder.CardAction.openUrl(session,"https://www.swissworldcargo.com/en/web/20184/station-info","Contact US")])
-      
+          //thumbnail.buttons([new builder.CardAction.dialogAction(session," ","",""),new builder.CardAction.openUrl(session,"https://www.swissworldcargo.com/en/web/20184/station-info","Contact US")])      
           var messagess = new builder.Message(session).attachments([thumbnail]);
          // session.send(messagess);
          builder.Prompts.text(session, messagess);
-
     //builder.Prompts.text(session, 'Please enter your email address or phone number?', {retryPrompt : "Please enter your Name or Mobile Number..."});
    }
-  }));
+}
 
+  }));
 
 bot.dialog('MainMethod', [  
     (session, args) => 
@@ -214,36 +220,52 @@ bot.dialog('MainMethod', [
     }
 ]);
 
-
-
-
-
-
+bot.dialog('EndMethod', [  
+    (session, args) => 
+    { 
+     if (session.message.text.length >= 11){           
+        LuisAjax(session.message.text,session);
+       }
+      else{
+            session.cancelDialog();
+            session.send("Please enter a valid awb number ?");
+      }
+    
+    }
+]);
 // AWB Search
 bot.dialog('Note.Search', [  
     (session, args) => 
     {       
         session.sendTyping();
         var AWBNumber = args==undefined ? session.message.text.replace(/\s/g, '') : args;
-
         var match = false;
-        var userName = session.userData[UserNameKey];
-       
-    
+        var userName = session.userData[UserNameKey];      
+        var tableHTML="";
+        var list =[];
+        list.push("Exit");
+        list.push("Continue");
         if(AWBNumber.length!=11)
             session.send('Invalid AWB Number format. Please enter valid AWB number in format 1XX-12XXXX78');
         else{
             database.awb.forEach(function(element) {
                 if(element.key.toString()== AWBNumber){
                     //session.endDialogWithResult({response :element.value});                
-                    
-                     var tableHTML = '<table style="padding:10px;border:1px solid black;"><tr ><th style="background-color:#c6c6c6;width:100px;hight:200px">Shipment Ready For Carriage </th><td align="center">'+element.shipmentready +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Departed</th><td align="center">'+element.shipmentdeparted +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Flight Departure </th><td align="center">'+element.flightdeparture +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Flight Arrival</th><td align="center">'+element.FlightArrival +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Arrived </th><td align="center">'+element.ShipmentArrived +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Ready For Pick-Up  </th><td align="center">'+element.ShipmentReadyForPUp +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Delivered </th><td align="center">'+element.ShipmentDelivered +'</td><td align="center">'+element.Itemcount +'</td></tr></table>';
+                    // var tableHTML = '<table style="padding:10px;border:1px solid black;"><tr ><th style="background-color:#c6c6c6;width:100px;hight:200px">Shipment Ready For Carriage </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.shipmentready +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Departed</th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.shipmentdeparted +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Flight Departure </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.flightdeparture +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Flight Arrival</th><td style="background-color:#008000";width:4px></td > <td align="center">'+element.FlightArrival +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Arrived </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.ShipmentArrived +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Ready For Pick-Up  </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.ShipmentReadyForPUp +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Delivered </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.ShipmentDelivered +'</td><td align="center">'+element.Itemcount +'</td></tr></table>';
+                //     if(ShipmentDelivered=="Yet to deliver")
+                //    {
+                //    tableHTML = '<table style="padding:10px;border:1px solid black;"><tr><td>AWB Number :'+element.key+'<td><td><img src='+"C:/Users/19242/Pictures/abb.PNG"+'></img></td></tr></table><table style="padding:10px;border:1px solid black;"><tr ><th style="background-color:#c6c6c6;width:100px;hight:200px">Shipment Ready For Carriage </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.shipmentready +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Departed</th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.shipmentdeparted +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Flight Departure </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.flightdeparture +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6;width:100px;hight:200px">&nbsp</th> <td align="center"></td><td align="center"></td></tr><tr ><th style="background-color:#c6c6c6;width:100px;hight:200px"> &nbsp</th></td> <td align="center"></td><td align="center"></td></tr><tr ><th style="background-color:#c6c6c6;width:100px;hight:200px">&nbsp  </th> <td align="center"></td><td align="center"></td></tr><tr ><th style="background-color:#c6c6c6;width:100px;hight:200px"></th><td style=width:4px"></td > <td align="center">'+element.ShipmentDelivered +'</td><td align="center">'+element.Itemcount +'</td></tr></table>';
+                      tableHTML = '<table style="padding:10px;border:1px solid black;"><tr><td>AWB Number :'+element.key+'<td><td><img src='+"C:/Users/19242/Pictures/abb.PNG"+'></img></td></tr></table><table style="padding:10px;border:1px solid black;"><tr ><td style="background-color:#c6c6c6;width:100px;hight:200px">Shipment Ready For Carriage </td><td style="background-color:#008000;width:3px;border-left: 1px solid black;border-right: 1px solid black;"></td > <td align="center">'+element.shipmentready +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><td style="background-color:#c6c6c6">Shipment Departed</td><td style="background-color:#008000;width:3pxp;border-left: 1px solid black;border-right: 1px solid black;"></td > <td align="center">'+element.shipmentdeparted +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><td style="background-color:#c6c6c6">Flight Departure </td><td style="background-color:#008000;width:3px;border-left: 1px solid black;border-right: 1px solid black;"></td > <td align="center">'+element.flightdeparture +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:;width:100px;hight:200px">&nbsp</th> <td align="center" style="width:3px;border-left: 1px solid black;border-right: 1px solid black;"></td><td align="center"></td></tr><tr ><th style="background-color:;width:100px;hight:200px"> &nbsp</th></td> <td align="center></td><td align="center style="width:3px;border-left: 1px solid black;border-right: 1px solid black;"></td></tr><tr ><th style="background-color:;width:100px;hight:200px">&nbsp  </th> <td align="center"; style="width:3px;border-left: 1px solid black;border-right: 1px solid black;"></td><td align="center";></td></tr><tr ><th style="background-color:;width:100px;hight:200px"></th><td style="width:3px;border-left: 1px solid black;border-right:  1px solid black;"></td > <td align="center">'+element.ShipmentDelivered +'</td><td align="center">'+element.Itemcount +'</td></tr></table>';
+                //    }
+                // else{
+                //      tableHTML = '<table style="padding:10px;border:1px solid black;"><tr ><th style="background-color:#c6c6c6;width:100px;hight:200px">Shipment Ready For Carriage </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.shipmentready +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Departed</th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.shipmentdeparted +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Flight Departure </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.flightdeparture +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Flight Arrival</th><td style="background-color:#008000";width:4px></td > <td align="center">'+element.FlightArrival +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Arrived </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.ShipmentArrived +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Ready For Pick-Up  </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.ShipmentReadyForPUp +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Delivered </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.ShipmentDelivered +'</td><td align="center">'+element.Itemcount +'</td></tr></table>';
+                //     }
+                        
                      var message = {
                         type: 'message',
                          textFormat: 'xml', 
                         text: tableHTML
-                     };              
-
+                     };   
 
                     // var tableHTML = '<table style="padding:10px;border:1px solid black;"><tr style="background-color:#c6c6c6"><th>Countries</th><th>Capitals</th><th>Population</th><th>Language</th></tr><tr><td>USA</td><td>Washington D.C.</td><td>309 million</td><td>English</td></tr><tr><td>Sweden</td><td>Stockholm</td><td>9 million</td><td>Swedish</td></tr></table>';
                     // var message = {
@@ -251,12 +273,26 @@ bot.dialog('Note.Search', [
                     //     textFormat: 'xml', 
                     //     text: tableHTML
                     // };
-                    session.send(message).endDialog();
-                   // console.log(table);        
+                 //   session.cancelDialog();
+                    //session.userData[UserNameKey] ="";
+                    session.send(message);
+
+                   // session.send('Thank You! I hope I could help you in tracking your shipment. For all other information, request you to kindly contact directly over the phone.');
+                   builder.Prompts.choice(session, 'Please select any one from list ?', list,{ listStyle: builder.ListStyle.button })
+                //    function(session,result){
+                //     var check = session.message.text();
+                //     if(check =="contu"){
+                //            session.beginDialog("")
+                //     }
+                  // }
+
+                   // console.log(table);  
+                  // session.cancelDialog();
                     match = true;
                 } 
+                
             }, this);
-            session.endDialog('Thank You! I hope I could help you in tracking your shipment. For all other information, request you to kindly contact directly over the phone.');
+        
               if(!match) 
             session.send('AWB not found. Please enter valid AWB number');
         }
@@ -295,6 +331,10 @@ function LuisAjax(statement,session){
     var request = require('request');  
     var proxy = 'http://10.6.13.87:8080';  
     var agent = new HttpsProxyAgent(proxy);  
+    if(statement.length==11)
+    statement = "Please find the my awb " + statement;
+    else
+    statement=statement;
     request({  
         uri: 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/8f41d0fb-d7f1-4f6f-87e4-d3ece31ba8c0',
         method: "POST",
