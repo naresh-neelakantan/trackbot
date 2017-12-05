@@ -5,13 +5,11 @@ var builder = require('botbuilder');
 var restify = require('restify');
 var path = require('path');
 var database = require(path.join(__dirname, "./Database.js"));
-//var database = require("./Database.js")
-const env = require('dotenv');
+var env = require('dotenv');
 var Table = require('cli-table');
 var phone = require('phone-regex');
 var email = require('regex-email');
 var ProgressBar = require('progress');
-//var path = require('path');
 var botbuilder_azure = require("botbuilder-azure");
 
 env.config();
@@ -128,12 +126,12 @@ bot.dialog('GetUserData', [
          if(list.length>0)
          {
           list3.push('None of the above');
-          builder.Prompts.choice(session, 'We have found the awb numbers on your name .Please select any one from list', list3,{ listStyle: builder.ListStyle.button });
+          builder.Prompts.choice(session, 'Aha! Here are the AWB numbers on your name. Can you please select any one from list?', list3,{ listStyle: builder.ListStyle.button });
           //builder.Prompts.choice(session, 'Not from the list', ['Not from the list'],{ listStyle: builder.ListStyle.button });
         }
 
         else{            
-            builder.Prompts.text(session,'We are unable to track AWB numbers for the given details. Please enter the valid Awb number ?')// try to add choices
+            builder.Prompts.text(session,'Oh! I could not find an AWB number for the details that you entered. Is it possible to check and please enter the valid AWB number?')// try to add choices
         }
    
       
@@ -146,11 +144,11 @@ bot.dialog('GetUserData', [
         {       
           list1.push('Track By AWB Number');
           list1.push('Track By Flight Number');
-          builder.Prompts.choice(session, 'Please select any one from list', list1,{ listStyle: builder.ListStyle.button }),
+          builder.Prompts.choice(session, 'Can you please select any one option from the list below:', list1,{ listStyle: builder.ListStyle.button }),
           function (session, result) {
             var intent  = session.message.text.split('=');
             if(intent[1]=="Track By AWB Number"){
-            builder.Prompts.text(session, 'Please enter AWB/Flight number to search')
+            builder.Prompts.text(session, 'Oh! If you could not find the number in the above list, I request you to kindly enter AWB/Flight number to search')
            }       
               //LuisAjax(session.message.text,session);          
           }          
@@ -166,10 +164,14 @@ bot.dialog('GetUserData', [
 // Greet dialogbu
 bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
     var Search  = session.message.text; 
-    if(Search =="Exit")
+    /* if(Search =="Exit")
     {
        session.endDialog("Thank you! It was nice speaking to you. Have a nice day");
        
+    } */
+    if(Search =="Discontinue")
+    {
+    session.endConversation("Thank you! It was nice speaking to you. Have a nice day");
     }
     else if(Search =="Continue"){
            //builder.Prompts.text(session,"Please enter AWB number");
@@ -189,11 +191,11 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
   
           
          if(Search=="Track By AWB Number"){
-             return session.endDialog("Please enter AWB number")
+             return session.endDialog("Can you please enter the AWB number?")
          }
 
          else if(Search=="Track By Flight Number"){
-            return session.endDialog("Please enter Flight number")} 
+            return session.endDialog("Can you please enter the Flight number?")} 
              
          session.userData[UserNameKey] = results.response;           
         if(session.userData[UserNameKey]!=""|| session.userData[UserNameKey]!= undefined){
@@ -211,7 +213,7 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
                 company=element.Company.toString();
             }
         })
-        var text = 'Welcome '+ name +' from '+company+'.\n Please select the below options for more details';
+        var text = 'Welcome '+ name +' from '+company+'.\n I would request you to kindly select the below options for more details';
           thumbnail.text(text);
           thumbnail.tap(new builder.CardAction.openUrl(session,"https://www.swissworldcargo.com/about_us/company/our_story"));
           thumbnail.buttons([new builder.CardAction.dialogAction(session," ","Track Shipment","Track Shipment"),new builder.CardAction.openUrl(session,"https://www.swissworldcargo.com/en/web/20184/station-info","Contact US")])
@@ -232,7 +234,7 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
           thumbnail.images([builder.CardImage.create(session,'https://i3ltrackbotdemo.blob.core.windows.net/images/image-humanoid.PNG')]);
           //thumbnail.images([builder.CardImage.create(session,"C:/Users/Public/Pictures/Sample Pictures/girl-icon.PNG")]);          
          // thumbnail.images([builder.CardImage.create(session,"C:/Users/Public/Pictures/Sample Pictures/Swiss.PNG")]);
-          var text = '\n\rI am Alan, Track&Trace AI Bot from Swiss World Cargo. \r\n Email-id: alan@swisscargo.com.\r\nPlease provide your email address or phone number?';
+          var text = '\n\rHey, I am Alan from Swiss World Cargo. \r\n Email-id: alan@swisscargo.com.\r\nCan you please provide your email address or phone number?';
           thumbnail.text(text);
           thumbnail.tap(new builder.CardAction.openUrl(session,"https://www.swissworldcargo.com/about_us/company/our_story"));
           //thumbnail.buttons([new builder.CardAction.dialogAction(session," ","",""),new builder.CardAction.openUrl(session,"https://www.swissworldcargo.com/en/web/20184/station-info","Contact US")])      
@@ -275,7 +277,8 @@ bot.dialog('Note.Search', [
         var userName = session.userData[UserNameKey];      
         var tableHTML="";
         var list =[];
-        list.push("Exit");
+        //list.push("Exit");
+        list.push("Discontinue");
         list.push("Continue");
         if(AWBNumber.length!=11)
             session.send('Invalid AWB Number format. Please enter valid AWB number in format 1XX-12XXXX78');
@@ -287,17 +290,18 @@ bot.dialog('Note.Search', [
                 //     if(ShipmentDelivered=="Yet to deliver")
                 //    {
                 //    tableHTML = '<table style="padding:10px;border:1px solid black;"><tr><td>AWB Number :'+element.key+'<td><td><img src='+"C:/Users/19242/Pictures/abb.PNG"+'></img></td></tr></table><table style="padding:10px;border:1px solid black;"><tr ><th style="background-color:#c6c6c6;width:100px;hight:200px">Shipment Ready For Carriage </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.shipmentready +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Departed</th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.shipmentdeparted +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Flight Departure </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.flightdeparture +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6;width:100px;hight:200px">&nbsp</th> <td align="center"></td><td align="center"></td></tr><tr ><th style="background-color:#c6c6c6;width:100px;hight:200px"> &nbsp</th></td> <td align="center"></td><td align="center"></td></tr><tr ><th style="background-color:#c6c6c6;width:100px;hight:200px">&nbsp  </th> <td align="center"></td><td align="center"></td></tr><tr ><th style="background-color:#c6c6c6;width:100px;hight:200px"></th><td style=width:4px"></td > <td align="center">'+element.ShipmentDelivered +'</td><td align="center">'+element.Itemcount +'</td></tr></table>';
-                      tableHTML = '<table style="padding:10px;border:1px solid black;"><tr><td>AWB Number :'+element.key+'<td><td><img src='+"https://i3ltrackbotdemo.blob.core.windows.net/images/abb.PNG"+'></img></td></tr></table><table style="padding:10px;border:1px solid black;"><tr ><td style="background-color:#c6c6c6;width:100px;hight:200px">Shipment Ready For Carriage </td><td style="background-color:#008000;width:3px;border-left: 1px solid black;border-right: 1px solid black;"></td > <td align="center">'+element.shipmentready +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><td style="background-color:#c6c6c6">Shipment Departed</td><td style="background-color:#008000;width:3pxp;border-left: 1px solid black;border-right: 1px solid black;"></td > <td align="center">'+element.shipmentdeparted +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><td style="background-color:#c6c6c6">Flight Departure </td><td style="background-color:#008000;width:3px;border-left: 1px solid black;border-right: 1px solid black;"></td > <td align="center">'+element.flightdeparture +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:;width:100px;hight:200px">&nbsp</th> <td align="center" style="width:3px;border-left: 1px solid black;border-right: 1px solid black;"></td><td align="center"></td></tr><tr ><th style="background-color:;width:100px;hight:200px"> &nbsp</th></td> <td align="center></td><td align="center style="width:3px;border-left: 1px solid black;border-right: 1px solid black;"></td></tr><tr ><th style="background-color:;width:100px;hight:200px">&nbsp  </th> <td align="center"; style="width:3px;border-left: 1px solid black;border-right: 1px solid black;"></td><td align="center";></td></tr><tr ><th style="background-color:;width:100px;hight:200px"></th><td style="width:3px;border-left: 1px solid black;border-right:  1px solid black;"></td > <td align="center">'+element.ShipmentDelivered +'</td><td align="center">'+element.Itemcount +'</td></tr></table>';
-                //    }
+                      //tableHTML = '<table style="padding:10px;border:1px solid black;"><tr><td>AWB Number :'+element.key+'<td><td><img src='+"https://i3ltrackbotdemo.blob.core.windows.net/images/abb.PNG"+'></img></td></tr></table><table style="padding:10px;border:1px solid black;"><tr ><td style="background-color:#c6c6c6;width:100px;hight:200px">Shipment Ready For Carriage </td><td style="background-color:#008000;width:3px;border-left: 1px solid black;border-right: 1px solid black;"></td > <td align="center">'+element.shipmentready +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><td style="background-color:#c6c6c6">Shipment Departed</td><td style="background-color:#008000;width:3pxp;border-left: 1px solid black;border-right: 1px solid black;"></td > <td align="center">'+element.shipmentdeparted +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><td style="background-color:#c6c6c6">Flight Departure </td><td style="background-color:#008000;width:3px;border-left: 1px solid black;border-right: 1px solid black;"></td > <td align="center">'+element.flightdeparture +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:;width:100px;hight:200px">&nbsp</th> <td align="center" style="width:3px;border-left: 1px solid black;border-right: 1px solid black;"></td><td align="center"></td></tr><tr ><th style="background-color:;width:100px;hight:200px"> &nbsp</th></td> <td align="center></td><td align="center style="width:3px;border-left: 1px solid black;border-right: 1px solid black;"></td></tr><tr ><th style="background-color:;width:100px;hight:200px">&nbsp  </th> <td align="center"; style="width:3px;border-left: 1px solid black;border-right: 1px solid black;"></td><td align="center";></td></tr><tr ><th style="background-color:;width:100px;hight:200px"></th><td style="width:3px;border-left: 1px solid black;border-right:  1px solid black;"></td > <td align="center">'+element.ShipmentDelivered +'</td><td align="center">'+element.Itemcount +'</td></tr></table>';
+                      session.send("Shipment Ready For Carriage \t : " + element.shipmentready +element.Itemcount+"<br />" +'Shipment Departed \t:'+element.shipmentdeparted +element.Itemcount + "<br/>"+"Flight Departure :\t"+ element.flightdeparture +element.Itemcount + "<br/>"+"Flight Arrival \t : "+ element.FlightArrival +element.Itemcount + "<br/>"+"Shipment Arrived \t :"+ element.ShipmentArrived +element.Itemcount +"<br/>"+"Shipment Ready For Pick-Up \t : "+" "+ element.ShipmentReadyForPUp +element.Itemcount+"<br/>" +"Shipment Delivered \t : "+ element.ShipmentDelivered +element.Itemcount);                
+                      //    }
                 // else{
                 //      tableHTML = '<table style="padding:10px;border:1px solid black;"><tr ><th style="background-color:#c6c6c6;width:100px;hight:200px">Shipment Ready For Carriage </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.shipmentready +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Departed</th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.shipmentdeparted +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Flight Departure </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.flightdeparture +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Flight Arrival</th><td style="background-color:#008000";width:4px></td > <td align="center">'+element.FlightArrival +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Arrived </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.ShipmentArrived +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Ready For Pick-Up  </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.ShipmentReadyForPUp +'</td><td align="center">'+element.Itemcount +'</td></tr><tr ><th style="background-color:#c6c6c6">Shipment Delivered </th><td style="background-color:#008000;width:4px"></td > <td align="center">'+element.ShipmentDelivered +'</td><td align="center">'+element.Itemcount +'</td></tr></table>';
                 //     }
                         
-                     var message = {
-                        type: 'message',
-                         textFormat: 'xml', 
-                        text: tableHTML
-                     };   
+                     //var message = {
+                     //   type: 'message',
+                     //   textFormat: 'xml', 
+                     //   text: tableHTML
+                     //};   
 
                     // var tableHTML = '<table style="padding:10px;border:1px solid black;"><tr style="background-color:#c6c6c6"><th>Countries</th><th>Capitals</th><th>Population</th><th>Language</th></tr><tr><td>USA</td><td>Washington D.C.</td><td>309 million</td><td>English</td></tr><tr><td>Sweden</td><td>Stockholm</td><td>9 million</td><td>Swedish</td></tr></table>';
                     // var message = {
@@ -307,7 +311,7 @@ bot.dialog('Note.Search', [
                     // };
                  //   session.cancelDialog();
                     //session.userData[UserNameKey] ="";
-                    session.send(message);
+                    //session.send(message);
 
                    // session.send('Thank You! I hope I could help you in tracking your shipment. For all other information, request you to kindly contact directly over the phone.');
                    builder.Prompts.choice(session, 'Please select any one from list ?', list,{ listStyle: builder.ListStyle.button })
@@ -379,7 +383,7 @@ function LuisAjax(statement,session){
         headers: {
             'Ocp-Apim-Subscription-Key' : '3576f9b91fdf4762b5a0dd790e68a1af',
         },
-        //agent: agent,
+        agent: agent,
         timeout: 10000,
         followRedirect: true,
         maxRedirects: 10
@@ -410,7 +414,7 @@ function LuisAjax(statement,session){
             if(intent[1]=="Track AWB")
             {
                // session.userData[UserNameKey] = "Test";
-               return session.endDialog('Please enter Swiss Cargo Air Way Bill Number /Email ID to track ?');
+               return session.endDialog('Please enter Swiss Cargo AWB Number /Email ID to track ?');
             }
     
             else if(intent[1]=="Track Flight")
