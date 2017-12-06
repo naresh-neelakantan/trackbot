@@ -383,7 +383,7 @@ function LuisAjax(statement,session){
         headers: {
             'Ocp-Apim-Subscription-Key' : '3576f9b91fdf4762b5a0dd790e68a1af',
         },
-        agent: agent,
+        //agent: agent,
         timeout: 10000,
         followRedirect: true,
         maxRedirects: 10
