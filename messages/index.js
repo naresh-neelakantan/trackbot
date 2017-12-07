@@ -12,7 +12,7 @@ var phone = require('phone-regex');
 var email = require('regex-email');
 var ProgressBar = require('progress');
 var botbuilder_azure = require('botbuilder-azure');
-var Lowercase = require('lower-case');
+//var Lowercase = require('lower-case');
 
 env.config();
 
@@ -104,7 +104,7 @@ bot.dialog('GetUserData', [
         var Mobcheck  =  phone().test(input);
         var EmailCheck = email.test(input);
         if(Mobcheck){var Mobile = input;}
-        else if(EmailCheck){{var Email = Lowercase(input);}}
+        else if(EmailCheck){{var Email = input;}}
         //else{builder.Prompts.text(session,'PLease enter valid phone number or Email ID')}
         database.awb.forEach(function(element) {
             if(element.EmailId.toString()== Email || element.Mobile.toString()== Mobile ){
@@ -222,7 +222,7 @@ else{
          // thumbnail.images([builder.CardImage.create(session,"C:/Users/Public/Pictures/Sample Pictures/Swiss.PNG")]);
          var name= "";
          var company="";
-         var user = Lowercase(Search);
+         var user = Search;
          database.awb.forEach(function(element) {
             if(element.EmailId.toString()== user||element.Mobile.toString()== user){            
                 name=element.Name.toString();
