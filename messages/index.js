@@ -222,7 +222,7 @@ else{
          // thumbnail.images([builder.CardImage.create(session,"C:/Users/Public/Pictures/Sample Pictures/Swiss.PNG")]);
          var name= "";
          var company="";
-         var user = Search;
+         var user = "eva@roche.ch";
          database.awb.forEach(function(element) {
             if(element.EmailId.toString()== user||element.Mobile.toString()== user){            
                 name=element.Name.toString();
