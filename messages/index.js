@@ -182,13 +182,14 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
     var name= "";
     var company="";
 
-    var Mobcheck  =  phone().test(custUser);
-    var EmailCheck = email.test(custUser);
+   // var Mobcheck  =  phone().test(custUser);
+    //var EmailCheck = email.test(custUser);
     session.send("Out put of custUser " + custUser);
-    session.send("Out put of regx  EmailCheck " + EmailCheck);
-    session.send("Out put of regx  Mobcheck " + Mobcheck);
+    //session.send("Out put of regx  EmailCheck " + EmailCheck);
+    //session.send("Out put of regx  Mobcheck " + Mobcheck);
     console.log(custUser);
-        if(Mobcheck || EmailCheck){
+        //if(Mobcheck || EmailCheck){
+    if(true) {
     database.awb.forEach(function(element) {
        if(element.EmailId == custUser ||element.Mobile== custUser){            
            name=element.Name;
