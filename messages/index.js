@@ -1,6 +1,6 @@
 // This loads the environment variables from the .env file
 //require('dotenv-extended').load();
-//final_versionv3.0
+//final_versionv4.0
 
 var builder = require('botbuilder');
 var restify = require('restify');
@@ -100,7 +100,8 @@ bot.dialog('GetUserData', [
         var list2 =[];
         var list3 =[];   
 
-        var input = session.userData[UserNameKey];
+        var input =  session.userData[UserNameKey];
+      
         var Mobcheck  =  phone().test(input);
         var EmailCheck = email.test(input);
         if(Mobcheck){var Mobile = input;}
@@ -175,6 +176,8 @@ bot.dialog('GetUserData', [
 // Greet dialogbu
 bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
     var Search  = session.message.text; 
+    var custUser = Search;
+    
     /* if(Search =="Exit")
     {
        session.endDialog("Thank you! It was nice speaking to you. Have a nice day");
@@ -205,8 +208,10 @@ else{
    //  var childId = results.childId.split(':');
     if (results && results.response) {
 
-          var Search  = session.message.text; 
+         // var Search  = session.message.text; 
          var intent  = Search.split('=');
+
+   
        // var list1 =[]
           //list1.push('Track By AWB Number');  
          // list1.push('Track By Flight Number');
@@ -216,20 +221,22 @@ else{
         if(session.userData[UserNameKey]!=""|| session.userData[UserNameKey]!= undefined){
             
            session.privateConversationData[UserWelcomedKey] = true;
-            var thumbnail = new builder.ThumbnailCard(session);
+
+                 
+            var thumbnail = new builder.ThumbnailCard(session);           
         //  thumbnail.title(results.response);
           thumbnail.images([builder.CardImage.create(session, "https://i3ltrackbotdemo.blob.core.windows.net/images/Swiss.PNG")]);
          // thumbnail.images([builder.CardImage.create(session,"C:/Users/Public/Pictures/Sample Pictures/Swiss.PNG")]);
          var name= "";
          var company="";
-         var user = "eva@roche.ch";
          database.awb.forEach(function(element) {
-            if(element.EmailId.toString()== user||element.Mobile.toString()== user){            
+            if(element.EmailId.toString()== custUser ||element.Mobile.toString()== custUser){            
                 name=element.Name.toString();
                 company=element.Company.toString();
             }
         })
-        var text = 'Welcome '+ name +' from '+company+'.\n I would request you to kindly select the below options for more details';
+        session.userData[UserNameKey]=custUser;
+          var text = 'Welcome '+ name +' from '+company+'.\n I would request you to kindly select the below options for more details'; 
           thumbnail.text(text);
           thumbnail.tap(new builder.CardAction.openUrl(session,"https://www.swissworldcargo.com/about_us/company/our_story"));
           thumbnail.buttons([new builder.CardAction.dialogAction(session," ","Track Shipment","Track Shipment"),new builder.CardAction.openUrl(session,"https://www.swissworldcargo.com/en/web/20184/station-info","Contact US")])
@@ -507,8 +514,7 @@ function LuisAjax(statement,session){
 
 // globalTunnel.initialize({
 //     tunnel: 'both',
-//     host: '10.6.13.87',
-//     port: 8080
+
 //   }); 
 // var recognizer = new builder.LuisRecognizer(process.env.LUIS_MODEL_URL);
 // recognizer.onEnabled((context,callback)=>{
