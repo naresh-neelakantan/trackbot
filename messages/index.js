@@ -176,12 +176,14 @@ bot.dialog('GetUserData', [
 // Greet dialogbu
 bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
     var Search  = session.message.text; 
+    console.log(session.message.text);
     var custUser = Search;
     var name= "";
     var company="";
 
     var Mobcheck  =  phone().test(custUser);
     var EmailCheck = email.test(custUser);
+    console.log(custUser);
         if(Mobcheck || EmailCheck){
     database.awb.forEach(function(element) {
        if(element.EmailId == custUser ||element.Mobile== custUser){            
@@ -248,7 +250,9 @@ else{
           thumbnail.buttons([new builder.CardAction.dialogAction(session," ","Track Shipment","Track Shipment"),new builder.CardAction.openUrl(session,"https://www.swissworldcargo.com/en/web/20184/station-info","Contact US")])
       
           var messagess = new builder.Message(session).attachments([thumbnail]);
+           
           session.send(messagess);
+          session.send(session.message.text);
          }
            //session.endDialog('Welcome to Swiss Cargo AWB/Flight search.Welcome %s! %s', HelpMessage);
      }
