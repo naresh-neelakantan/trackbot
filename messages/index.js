@@ -185,7 +185,7 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
     var Mobcheck  =  phone().test(custUser);
     var EmailCheck = email.test(custUser);
     session.send("Out put of custUser " + custUser);
-    session.send("Out put of regx  Mobcheck " + EmailCheck);
+    session.send("Out put of regx  EmailCheck " + EmailCheck);
     session.send("Out put of regx  Mobcheck " + Mobcheck);
     console.log(custUser);
         if(Mobcheck || EmailCheck){
