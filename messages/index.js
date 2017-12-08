@@ -198,7 +198,7 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
     } */
     if(Search =="Discontinue")
     {
-    session.endConversation("Thank you! It was nice speaking to you. Have a nice day");
+    session.endConversation("Thank you! It was nice speaking to you. Have a nice day...");
     //session.reset('greet');
     }
     else if(Search =="Continue"){
