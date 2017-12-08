@@ -177,12 +177,16 @@ bot.dialog('GetUserData', [
 bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
     var Search  = session.message.text; 
     console.log(session.message.text);
+    session.send("Out put of Search " + Search);
     var custUser = Search;
     var name= "";
     var company="";
 
     var Mobcheck  =  phone().test(custUser);
     var EmailCheck = email.test(custUser);
+    session.send("Out put of custUser " + custUser);
+    session.send("Out put of regx  Mobcheck " + EmailCheck);
+    session.send("Out put of regx  Mobcheck " + Mobcheck);
     console.log(custUser);
         if(Mobcheck || EmailCheck){
     database.awb.forEach(function(element) {
