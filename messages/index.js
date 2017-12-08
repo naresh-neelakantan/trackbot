@@ -34,9 +34,12 @@ if (useEmulator) {
     var server = restify.createServer();
     server.listen(process.env.port || process.env.PORT || 3978, function () {
         console.log('%s listening to %s', server.name, server.url);
+    
     });
     
     server.post('/api/messages', connector.listen());    
+    bot.localePath(path.join(__dirname, './locale'));
+
 } else {
     module.exports = { default: connector.listen() }
 }
@@ -89,7 +92,6 @@ var bot = new builder.UniversalBot(connector, [
         }
     }
 ]);
-bot.localePath(path.join(__dirname, './locale'));
 
 
 
