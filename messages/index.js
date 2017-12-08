@@ -184,9 +184,9 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
     var EmailCheck = email.test(custUser);
         if(Mobcheck || EmailCheck){
     database.awb.forEach(function(element) {
-       if(element.EmailId.toString()== custUser ||element.Mobile.toString()== custUser){            
-           name=element.Name.toString();
-           company=element.Company.toString();
+       if(element.EmailId == custUser ||element.Mobile== custUser){            
+           name=element.Name;
+           company=element.Company;
        }
    })
    session.userData[UserNameKey]=custUser;
