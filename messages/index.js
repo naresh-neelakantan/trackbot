@@ -193,7 +193,7 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
         //if(Mobcheck || EmailCheck){
     if(true) {
     database.awb.forEach(function(element) {
-       if(element.key.toString()== custUser){            
+       if(element.Mobile.toString()== custUser || element.EmailId.toString()== custUser ||){            
            name=element.Name;
            company=element.Company;
        }
