@@ -105,7 +105,7 @@ bot.dialog('GetUserData', [
 
         var input =  session.userData[UserNameKey];
 
-        var inputemail = input.replace("&#x0040","@");
+        var inputemail = input.replace("&#x0040;","@");
       
        // var Mobcheck  =  phone().test(input);
        // var EmailCheck = email.test(input);
