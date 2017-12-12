@@ -5,7 +5,7 @@ awb.push(
 {
     key:   "74312345678",
     Name: "Eva Goldschmidt",
-    EmailId: "eva roche.ch",
+    EmailId: "eva@roche.ch",
     Company: "Roche Diagnostics",
     Mobile :"417676767676",
     shipmentready:'18.11.2017 01:45',    
