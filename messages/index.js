@@ -34,12 +34,10 @@ if (useEmulator) {
     var server = restify.createServer();
     server.listen(process.env.port || process.env.PORT || 3978, function () {
         console.log('%s listening to %s', server.name, server.url);
-    
     });
     
     server.post('/api/messages', connector.listen());    
-    bot.localePath(path.join(__dirname, './locale'));
-
+    //bot.localePath(path.join(__dirname, './locale'));
 } else {
     module.exports = { default: connector.listen() }
 }
@@ -78,7 +76,9 @@ var bot = new builder.UniversalBot(connector, [
             return session.beginDialog('greet');
         }
        
-        
+        if (session.message.text.toLowerCase() =="hi" ||session.message.text.toLowerCase() =="hello" ||session.message.text.toLowerCase()=="hey" ){ 
+            session.reset("greet");
+         }
 
         else {
             //if(session.message.text.length !=11)
@@ -95,6 +95,7 @@ var bot = new builder.UniversalBot(connector, [
 
 
 
+
 bot.dialog('GetUserData', [  
     (session, args) => 
     { 
@@ -103,14 +104,16 @@ bot.dialog('GetUserData', [
         var list3 =[];   
 
         var input =  session.userData[UserNameKey];
+
+        var inputemail = input.replace("&#64;","@");
       
-        var Mobcheck  =  phone().test(input);
-        var EmailCheck = email.test(input);
-        if(Mobcheck){var Mobile = input;}
-        else if(EmailCheck){{var Email = input;}}
+       // var Mobcheck  =  phone().test(input);
+       // var EmailCheck = email.test(input);
+       // if(Mobcheck){var Mobile = input;}
+        //else if(EmailCheck){{var Email = input;}}
         //else{builder.Prompts.text(session,'PLease enter valid phone number or Email ID')}
         database.awb.forEach(function(element) {
-            if(element.EmailId.toString()== Email || element.Mobile.toString()== Mobile ){
+            if(element.EmailId.toString()== inputemail.toLowerCase() || element.Mobile.toString()== inputemail ){
                  list.push(element.key)   
                 for(var i=0 ; i<list.length;i++)
                 {
@@ -178,36 +181,40 @@ bot.dialog('GetUserData', [
 // Greet dialogbu
 bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
     var Search  = session.message.text; 
+//--------------
+
     console.log(session.message.text);
-    session.send("Out put of Search " + Search);
-    var custUser = Search;
+    var custUser = Search.replace("&#64;","@");
+
+    //-------------------
     var name= "";
     var company="";
 
-   // var Mobcheck  =  phone().test(custUser);
+    //var Mobcheck  =  phone().test(custUser);
     //var EmailCheck = email.test(custUser);
-    session.send("Out put of custUser " + custUser);
-    //session.send("Out put of regx  EmailCheck " + EmailCheck);
-    //session.send("Out put of regx  Mobcheck " + Mobcheck);
     console.log(custUser);
-        //if(Mobcheck || EmailCheck){
-    if(true) {
-    database.awb.forEach(function(element) {
-       if(element.Mobile.toString()== custUser || element.EmailId.toString()== custUser ){            
+    //    if(Mobcheck || EmailCheck){
+    database.awb.forEach(function(element){
+       if(element.EmailId == custUser.toLowerCase() || element.Mobile== custUser){            
            name=element.Name;
            company=element.Company;
+           console.log(name);
+           console.log(element.Name);
+           console.log(company);
+           console.log(element.Company);
        }
-   })
+    //
+    
+    
    session.userData[UserNameKey]=custUser;
-}
-    /* if(Search =="Exit")
+})   /* if(Search =="Exit")
     {
        session.endDialog("Thank you! It was nice speaking to you. Have a nice day");
        
     } */
-    if(Search =="Discontinue")
+    if(Search == "Discontinue")
     {
-    session.endConversation("Thank you! It was nice speaking to you. Have a nice day...");
+        session.endConversation("Thank you! It was nice speaking to you. Have a nice day...");
     //session.reset('greet');
     }
     else if(Search =="Continue"){
@@ -233,7 +240,9 @@ else{
          // var Search  = session.message.text; 
          var intent  = Search.split('=');
 
-   
+         if (Search.toLowerCase() =="hi" ||Search.toLowerCase() =="hello" || Search.toLowerCase() =="hey" ){ 
+            session.reset("greet");
+         }
        // var list1 =[]
           //list1.push('Track By AWB Number');  
          // list1.push('Track By Flight Number');
@@ -290,6 +299,8 @@ else{
 }
 
   }));
+
+  bot.localePath(path.join(__dirname, './locale'));
 
 bot.dialog('MainMethod', [  
     (session, args) => 
@@ -409,6 +420,8 @@ bot.dialog('Note.Flight', [
     }
 ]).triggerAction({ matches: 'Note.Flight' });
 
+bot.localePath(path.join(__dirname, './locale'));
+
 function LuisAjax(statement,session){
     var HttpsProxyAgent = require('https-proxy-agent');  
     var request = require('request');  
@@ -430,7 +443,7 @@ function LuisAjax(statement,session){
         headers: {
             'Ocp-Apim-Subscription-Key' : '3576f9b91fdf4762b5a0dd790e68a1af',
         },
-        //agent: agent,
+        agent: agent,
         timeout: 10000,
         followRedirect: true,
         maxRedirects: 10
@@ -469,6 +482,9 @@ function LuisAjax(statement,session){
                // session.userData[UserNameKey] = "Test";
                 return session.endDialog('Please enter Flight number to track ?');
             }
+            else if (luisresult.query.toLowerCase() =="hi" ||luisresult.query.toLowerCase() =="hello" || luisresult.query.toLowerCase()=="hey" ){ 
+                session.reset("greet");
+             }
             else{
             session.send("Please enter Valid AWB/Flight number to search");
             var thumbnail = new builder.ThumbnailCard(session);
