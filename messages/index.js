@@ -105,7 +105,7 @@ bot.dialog('GetUserData', [
 
         var input =  session.userData[UserNameKey];
 
-        var inputemail = input.replace("&#64;","@");
+        var inputemail = input.replace("&#x0040","@");
       
        // var Mobcheck  =  phone().test(input);
        // var EmailCheck = email.test(input);
@@ -184,7 +184,7 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
 //--------------
 
     console.log(session.message.text);
-    var custUser = Search.replace("&#64;","@");
+    var custUser = Search.replace("&#x0040;","@");
 
     //-------------------
     var name= "";
@@ -195,7 +195,7 @@ bot.dialog('greet', new builder.SimpleDialog(function (session, results) {
     console.log(custUser);
     //    if(Mobcheck || EmailCheck){
     database.awb.forEach(function(element){
-       if(element.EmailId == custUser.toLowerCase() || element.Mobile== custUser){            
+       if(element.EmailId.toString() == custUser.toLowerCase() || element.Mobile.toString()== custUser){            
            name=element.Name;
            company=element.Company;
            console.log(name);
